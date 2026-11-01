@@ -22,3 +22,9 @@ repos:
         language: system
         types_or: [go, go-mod, go-sum]
         pass_filenames: false
+      - id: actions
+        name: actions (mise run lint:actions)
+        entry: mise run lint:actions
+        language: system
+        files: ^\.github/workflows/
+        pass_filenames: false

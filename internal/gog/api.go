@@ -21,8 +21,11 @@ const (
 	embedBase   = "https://embed.gog.com"
 	apiBase     = "https://api.gog.com"
 	catalogBase = "https://catalog.gog.com"
-	userAgent   = "gogloader/0.1"
 )
+
+// UserAgent is sent with every GOG request; the CLI sets it to include the
+// build version.
+var UserAgent = "gogloader/dev"
 
 var apiHTTP = &http.Client{Timeout: 60 * time.Second}
 
@@ -59,7 +62,7 @@ func (c *Client) getJSON(ctx context.Context, rawURL string, auth bool, out any)
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("Accept", "application/json")
 	if auth {
 		tok, err := c.accessToken(ctx)
@@ -387,7 +390,7 @@ func fetchMD5(ctx context.Context, rawURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("User-Agent", userAgent)
+	req.Header.Set("User-Agent", UserAgent)
 	resp, err := apiHTTP.Do(req)
 	if err != nil {
 		return "", err

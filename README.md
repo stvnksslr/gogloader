@@ -2,11 +2,16 @@
 
 Download and install GOG.com games (including multipart installers) by store name.
 
+## Install
+
+    brew install --cask stvnksslr/tap/gogloader        # macOS / Linux
+    go install github.com/stvnksslr/gogloader/cmd/gogloader@latest
+
+Or download an archive for your platform from [GitHub Releases](https://github.com/stvnksslr/gogloader/releases) and check it against `checksums.txt`. The binaries aren't signed. The Homebrew cask removes macOS's quarantine flag for you. For a manual download, run `xattr -d com.apple.quarantine gogloader` first.
+
 ## Build
 
     go build -o gogloader ./cmd/gogloader
-    # or install into $GOBIN:
-    go install ./cmd/gogloader
 
 ## Development
 
@@ -17,6 +22,16 @@ Tools are pinned in `mise.toml`:
     mise run check            # run fmt, lint and test by hand
 
 Each task can also be run on its own: `mise run fmt`, `mise run lint`, `mise run test` or `mise run build`.
+
+### Releasing
+
+Releases are automated with [release-please](https://github.com/googleapis/release-please) and [GoReleaser](https://goreleaser.com):
+
+1. PRs are squash-merged, and the PR title becomes the commit on `main`, so it must be a [conventional commit](https://www.conventionalcommits.org/) (`feat: …`, `fix(auth): …`, `feat!: …`). CI checks this.
+2. Each push to `main` updates an open release PR (`chore(main): release X.Y.Z`) with the next version and a `CHANGELOG.md` entry. `feat` bumps the minor version, `fix` and `perf` bump the patch, and a breaking change (`!` or `BREAKING CHANGE:`) bumps the major.
+3. Merging the release PR tags `vX.Y.Z` and creates the GitHub Release. GoReleaser then attaches binaries for linux, macOS and windows (amd64 and arm64) and updates the Homebrew tap.
+
+`mise run release:snapshot` builds the same artifacts locally into `dist/` without publishing anything.
 
 ## Usage
 
