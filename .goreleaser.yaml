@@ -53,7 +53,7 @@ homebrew_casks:
     repository:
       owner: stvnksslr
       name: homebrew-tap
-      token: '{{ envOrDefault "HOMEBREW_TAP_TOKEN" "" }}'
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     directory: Casks
     homepage: https://github.com/stvnksslr/gogloader
     description: Download and install GOG.com games, including multipart installers, by store name
