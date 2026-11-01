@@ -1,0 +1,32 @@
+[tools]
+go = "1.27.3"
+golangci-lint = "2.15.0"
+prek = "0.5.9"
+
+[tasks.fmt]
+description = "Format Go code (gofmt + goimports)"
+run = "golangci-lint fmt"
+
+[tasks.lint]
+description = "Run golangci-lint"
+run = "golangci-lint run"
+
+[tasks.test]
+description = "Run the test suite"
+run = "go test ./..."
+
+[tasks.check]
+description = "fmt, lint and test, in order"
+run = ["mise run fmt", "mise run lint", "mise run test"]
+
+[tasks.build]
+description = "Build ./gogloader"
+run = "go build -o gogloader ./cmd/gogloader"
+
+[tasks."hooks:install"]
+description = "Install the prek git hooks"
+run = "prek install"
+
+[tasks."hooks:run"]
+description = "Run every prek hook against all files"
+run = "prek run --all-files"

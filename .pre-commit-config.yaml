@@ -1,0 +1,24 @@
+# Hooks are run by prek (https://github.com/j178/prek), a drop-in pre-commit
+# replacement. Each hook delegates to a mise task so it can also be run by
+# hand: `mise run fmt`, `mise run lint`, `mise run test`.
+repos:
+  - repo: local
+    hooks:
+      - id: fmt
+        name: fmt (mise run fmt)
+        entry: mise run fmt
+        language: system
+        types: [go]
+        pass_filenames: false
+      - id: lint
+        name: lint (mise run lint)
+        entry: mise run lint
+        language: system
+        types: [go]
+        pass_filenames: false
+      - id: test
+        name: test (mise run test)
+        entry: mise run test
+        language: system
+        types_or: [go, go-mod, go-sum]
+        pass_filenames: false
