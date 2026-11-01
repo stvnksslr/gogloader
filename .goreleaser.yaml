@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# Release assets for gogloader. Run by .github/workflows/release.yml after
+# release-please has created the tag and the GitHub Release; GoReleaser only
+# attaches binaries (release-please owns the notes / CHANGELOG.md).
+version: 2
+
+project_name: gogloader
+
+before:
+  hooks:
+    - go mod verify
+
+builds:
+  - id: gogloader
+    main: ./cmd/gogloader
+    binary: gogloader
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{ .Version }} -X main.commit={{ .FullCommit }} -X main.date={{ .CommitDate }}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: gogloader
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  disable: true
+
+release:
+  # The release (and its notes) already exist, created by release-please.
+  mode: keep-existing
+
+homebrew_casks:
+  - name: gogloader
+    ids: [gogloader]
+    repository:
+      owner: stvnksslr
+      name: homebrew-tap
+      token: '{{ envOrDefault "HOMEBREW_TAP_TOKEN" "" }}'
+    directory: Casks
+    homepage: https://github.com/stvnksslr/gogloader
+    description: Download and install GOG.com games, including multipart installers, by store name
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    commit_msg_template: "chore(cask): {{ .ProjectName }} {{ .Tag }}"
+    hooks:
+      post:
+        # The binary is not signed or notarized; drop the quarantine flag so
+        # Gatekeeper doesn't refuse to run it.
+        install_steps: |
+          on_macos do
+            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ .StagedPath }}/gogloader"]
+          end

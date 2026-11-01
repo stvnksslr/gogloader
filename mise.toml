@@ -2,6 +2,8 @@
 go = "1.27.3"
 golangci-lint = "2.15.0"
 prek = "0.5.9"
+goreleaser = "2.19.0"
+actionlint = "1.7.12"
 
 [tasks.fmt]
 description = "Format Go code (gofmt + goimports)"
@@ -30,3 +32,19 @@ run = "prek install"
 [tasks."hooks:run"]
 description = "Run every prek hook against all files"
 run = "prek run --all-files"
+
+[tasks."lint:actions"]
+description = "Lint GitHub Actions workflows"
+run = "actionlint"
+
+[tasks."release:check"]
+description = "Validate .goreleaser.yaml"
+run = "goreleaser check"
+
+[tasks."release:snapshot"]
+description = "Build all release artifacts locally into dist/ (no publishing)"
+run = "goreleaser release --snapshot --clean"
+
+[tasks.release]
+description = "Publish a release (CI only; needs GITHUB_TOKEN and HOMEBREW_TAP_TOKEN)"
+run = "goreleaser release --clean"

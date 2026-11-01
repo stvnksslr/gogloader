@@ -15,6 +15,9 @@ mise run lint         # golangci-lint run (config: .golangci.yml)
 mise run test         # go test ./...
 mise run check        # fmt → lint → test
 mise run build        # ./gogloader
+mise run release:check     # goreleaser check
+mise run release:snapshot  # build all release archives into dist/ (no publish)
+mise run lint:actions      # actionlint on .github/workflows
 mise run hooks:install  # prek install (git pre-commit hook)
 mise run hooks:run      # prek run --all-files
 go test ./internal/download -run TestFetchMultipartResumeAndVerify -v   # single test
@@ -25,6 +28,15 @@ The pre-commit hooks (`.pre-commit-config.yaml`, run by prek) are local `languag
 The download test takes ~6s because the md5-mismatch case exercises the retry backoff.
 
 Manual testing against the live API needs a token: `./gogloader auth login` (browser OAuth, paste back the redirect URL), then `./gogloader auth` to check status. Token lives at `os.UserConfigDir()/gogloader/token.json`.
+
+## Releases
+
+release-please (`release-please-config.json`, `.release-please-manifest.json`) keeps a release PR open from conventional commits on `main`. Merging it tags `vX.Y.Z`, and the `goreleaser` job in `.github/workflows/release.yml` (gated on `release_created`) runs `mise run release`, which attaches assets to the existing release (`release.mode: keep-existing`, changelog disabled) and pushes a cask to `stvnksslr/homebrew-tap`.
+
+- Don't edit `CHANGELOG.md` or the manifest by hand; release-please owns them.
+- PR titles must be conventional, because squash merge makes the title the commit on `main`.
+- Version info is injected via `-X main.version/commit/date` into `cmd/gogloader/main.go`. `internal/cli/version.go` falls back to `debug.ReadBuildInfo` for `go install`/`go build` binaries.
+- Workflow actions are pinned to commit SHAs with a `# vX.Y.Z` comment. Bump the SHA and the comment together. `mise run lint:actions` (actionlint) runs in CI and as a prek hook.
 
 ## Architecture
 
