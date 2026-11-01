@@ -1,2 +1,3 @@
 /gogloader
 dist/
+.claude/settings.local.json
