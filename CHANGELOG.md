@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/stvnksslr/gogloader/compare/v0.1.0...v0.1.1) (2026-11-01)
+
+
+### Bug Fixes
+
+* **release:** use .Env for the Homebrew tap token ([#5](https://github.com/stvnksslr/gogloader/issues/5)) ([078bae9](https://github.com/stvnksslr/gogloader/commit/078bae990fd61872ee8fc4bdd760dcd4366c33d8))
+
 ## 0.1.0 (2026-11-01)
 
 
