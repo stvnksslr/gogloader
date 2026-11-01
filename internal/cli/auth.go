@@ -67,6 +67,9 @@ func runAuthStatus(cmd *cobra.Command, _ []string) error {
 	st := ui.For(out)
 	fmt.Fprintf(out, "%s Logged in as %s\n\n", st.Green("✓"), st.Bold(u.Username))
 	t := &ui.Table{Indent: "  "}
+	if u.Email != "" {
+		t.Row(st.Dim("email"), u.Email)
+	}
 	t.Row(st.Dim("user id"), u.UserID)
 	t.Row(st.Dim("stored in"), gog.TokenLocation())
 	t.Row(st.Dim("expires"), c.TokenExpiry().Local().Format("2006-01-02 15:04")+" "+st.Dim("(refreshed automatically)"))
