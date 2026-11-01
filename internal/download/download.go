@@ -275,19 +275,44 @@ func verifyMD5(file, want string) error {
 }
 
 // FilenameFromURL derives a safe local filename from a CDN URL.
+// The result is always a single path element, the same on every OS.
 func FilenameFromURL(rawURL, fallback string) string {
-	name := ""
+	seg := ""
 	if u, err := url.Parse(rawURL); err == nil {
-		name = path.Base(u.Path)
-		if un, err := url.PathUnescape(name); err == nil {
-			name = un
+		seg = path.Base(u.Path)
+		if un, err := url.PathUnescape(seg); err == nil {
+			seg = un
 		}
 	}
-	name = filepath.Base(strings.ReplaceAll(name, "\\", "/"))
-	if name == "" || name == "." || name == "/" || name == ".." {
-		name = filepath.Base(fallback)
+	if name := safeName(seg); name != "" {
+		return name
 	}
-	return name
+	if name := safeName(fallback); name != "" {
+		return name
+	}
+	return "download"
+}
+
+// safeName reduces s to its last path element (treating both / and \ as
+// separators, whatever the host OS) and replaces characters that Windows
+// does not allow in file names. It returns "" if nothing usable is left.
+func safeName(s string) string {
+	s = strings.ReplaceAll(s, "\\", "/")
+	if i := strings.LastIndexByte(s, '/'); i >= 0 {
+		s = s[i+1:]
+	}
+	s = strings.Map(func(r rune) rune {
+		if r < 0x20 || strings.ContainsRune(`<>:"|?*`, r) {
+			return '_'
+		}
+		return r
+	}, s)
+	// Windows silently drops trailing dots and spaces.
+	s = strings.TrimRight(s, ". ")
+	if s == "" || s == "." || s == ".." {
+		return ""
+	}
+	return s
 }
 
 // ---------------------------------------------------------------------------

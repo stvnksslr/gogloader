@@ -74,6 +74,10 @@ func TestFilenameFromURL(t *testing.T) {
 		"https://cdn/x/setup_foo_%281.0%29.exe?a=b": "setup_foo_(1.0).exe",
 		"https://cdn/x/..%2F..%2Fetc%2Fpasswd":      "passwd",
 		"https://cdn/":                              "fb",
+		"https://cdn/..%5C..%5Cwin.exe":             "win.exe",
+		"https://cdn/a%3Ab%3F%2A.exe":               "a_b__.exe",
+		"https://cdn/trailing.%20":                  "trailing",
+		"https://cdn/..":                            "fb",
 	}
 	for in, want := range cases {
 		if got := FilenameFromURL(in, "fb"); got != want {
